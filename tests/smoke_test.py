@@ -187,6 +187,20 @@ function TabbedMenuFrameElement.new(target, mt)
   return setmetatable({ elements = {}, visible = true }, mt)
 end
 function TabbedMenuFrameElement:onFrameOpen() end
+-- Like the game's TextInputElement: a click outside the active field ends typing and calls the
+-- field's Esc callback with mouseClickedOutside = true
+function TabbedMenuFrameElement:mouseEvent(x, y, isDown, isUp, button, eventUsed)
+  local e = self.taskTextInput
+  if e ~= nil and e.visible and e.forcePressed and (isDown or isUp) then
+    local p, sz = e.absPosition, e.absSize
+    local inField = x >= p[1] and x <= p[1] + sz[1] and y >= p[2] and y <= p[2] + sz[2]
+    if not inField then
+      e.forcePressed = false
+      self:onTaskTextEsc(e, true)
+    end
+  end
+  return eventUsed
+end
 function TabbedMenuFrameElement:onFrameClose() end
 function TabbedMenuFrameElement:requestClose(callback) MENU_CLOSED = true return true end
 function TabbedMenuFrameElement:setMenuButtonInfo(info)
@@ -389,6 +403,9 @@ def single_player():
       frameStep()
     """)
     check(ev("F().dialog ~= nil and F().dialog.taskId == 4"), "double-click opens the dialog")
+    check(ev("F().taskTextInput.forcePressed == true"), "text field still active after the double-click's mouse-up")
+    run("local h = findHit('shade') mouse(h.x + 0.001, h.y + 0.001, true) mouse(h.x + 0.001, h.y + 0.001, false, true) frameStep()")
+    check(ev("F().dialog ~= nil"), "a click outside the text field does not close the dialog")
     run("clickHit('cancel')")
 
     # Drag between columns: card 4 to the top of Todo

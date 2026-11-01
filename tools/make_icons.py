@@ -15,48 +15,95 @@ BUILD = os.path.join(ROOT, "Build")
 PREVIEW = os.path.join(ROOT, "Docs", "icons")
 
 GREEN = (141, 198, 63)
-YELLOW = (224, 176, 48)
-GREY = (122, 122, 122)
+SS = 4  # drawn 4x larger, then scaled down (smooth edges)
+
+
+def pen_polygons(tip, toward, length, width):
+    """Pencil from tip towards a point: (cone, graphite point, body, cap) polygons."""
+    import math
+    dx, dy = toward[0] - tip[0], toward[1] - tip[1]
+    n = math.hypot(dx, dy)
+    ux, uy = dx / n, dy / n
+    px, py = -uy, ux
+    hw = width / 2
+
+    def at(t, side):
+        return (tip[0] + ux * t + px * side, tip[1] + uy * t + py * side)
+
+    cone_len = width * 1.25
+    cone = [at(0, 0), at(cone_len, hw), at(cone_len, -hw)]
+    lead = [at(0, 0), at(cone_len * 0.38, hw * 0.38), at(cone_len * 0.38, -hw * 0.38)]
+    body = [at(cone_len, hw), at(length - width * 0.6, hw), at(length - width * 0.6, -hw), at(cone_len, -hw)]
+    cap = [at(length - width * 0.6, hw), at(length, hw), at(length, -hw), at(length - width * 0.6, -hw)]
+    return cone, lead, body, cap
+
+
+def scaled(points, k):
+    return [(x * k, y * k) for x, y in points]
 
 
 def mod_icon(size=512):
-    s = size / 512
-    img = Image.new("RGBA", (size, size), (24, 30, 18, 255))
+    k = SS * size / 512
+    img = Image.new("RGBA", (size * SS, size * SS), (0, 0, 0, 0))
     d = ImageDraw.Draw(img)
-    # Board
-    d.rounded_rectangle([28 * s, 28 * s, 484 * s, 484 * s], radius=26 * s, fill=(38, 44, 32, 255), outline=(77, 107, 37, 255), width=int(6 * s))
-    d.rectangle([54 * s, 31 * s, 458 * s, 42 * s], fill=GREEN)
-    cols = [(GREY, 3), (YELLOW, 2), (GREEN, 3)]
-    colw = 128 * s
-    for i, (color, n) in enumerate(cols):
-        x0 = 52 * s + i * (colw + 16 * s)
-        d.rectangle([x0, 70 * s, x0 + colw, 82 * s], fill=color)
-        for j in range(n):
-            y0 = 104 * s + j * 120 * s
-            d.rectangle([x0, y0, x0 + colw, y0 + 96 * s], fill=(58, 64, 50, 255))
-            d.rectangle([x0, y0, x0 + 12 * s, y0 + 96 * s], fill=color)
-            for k in range(2):
-                ly = y0 + 28 * s + k * 30 * s
-                d.rectangle([x0 + 26 * s, ly, x0 + colw - (16 + 30 * k) * s, ly + 12 * s], fill=(205, 210, 196, 255))
-    # Check mark on the done column
-    x0 = 52 * s + 2 * (colw + 16 * s)
-    d.line([(x0 + 34 * s, 430 * s), (x0 + 58 * s, 454 * s), (x0 + 100 * s, 404 * s)], fill=GREEN, width=int(14 * s), joint="curve")
-    return img
+
+    def box(r, **kw):
+        d.rounded_rectangle([v * k for v in r[:4]], radius=r[4] * k, **{a: (int(b * k) if a == "width" else b) for a, b in kw.items()})
+
+    box((0, 0, 512, 512, 64), fill=(30, 40, 22, 255), outline=(77, 107, 37, 255), width=8)
+    # Clipboard
+    box((92, 62, 404, 470, 30), fill=(150, 102, 58, 255), outline=(112, 74, 40, 255), width=8)
+    d.rectangle(scaled([(124, 112), (372, 440)], k), fill=(244, 241, 230, 255))
+    # Rows: check boxes and lines
+    for i, y in enumerate((150, 220, 290, 360)):
+        done = i < 2
+        d.rectangle(scaled([(150, y), (184, y + 34)], k), outline=(95, 95, 95, 255), width=int(5 * k))
+        if done:
+            d.line(scaled([(154, y + 16), (166, y + 30), (192, y - 6)], k), fill=GREEN + (255,), width=int(9 * k), joint="curve")
+        end = (340, 310, 330, 290)[i]
+        d.rectangle(scaled([(204, y + 11), (end, y + 23)], k), fill=(185, 185, 185, 255) if done else (120, 120, 120, 255))
+    # Clip
+    box((180, 34, 316, 108, 20), fill=(196, 202, 206, 255), outline=(118, 124, 130, 255), width=6)
+    box((222, 50, 274, 72, 10), fill=(110, 116, 122, 255))
+    # Pen, with a soft shadow
+    cone, lead, body, cap = pen_polygons((292, 410), (470, 190), 270, 50)
+    shade = Image.new("RGBA", img.size, (0, 0, 0, 0))
+    sd = ImageDraw.Draw(shade)
+    for poly in (cone, body, cap):
+        sd.polygon(scaled([(x + 10, y + 12) for x, y in poly], k), fill=(0, 0, 0, 80))
+    img.alpha_composite(shade)
+    d = ImageDraw.Draw(img)
+    d.polygon(scaled(body, k), fill=GREEN + (255,), outline=(90, 130, 40, 255), width=int(4 * k))
+    d.polygon(scaled(cap, k), fill=(70, 100, 32, 255))
+    d.polygon(scaled(cone, k), fill=(232, 200, 150, 255))
+    d.polygon(scaled(lead, k), fill=(45, 45, 45, 255))
+    img = img.resize((size, size), Image.LANCZOS)
+    # Opaque icon: put it on the background colour (corners included)
+    bg = Image.new("RGBA", (size, size), (20, 26, 15, 255))
+    return Image.alpha_composite(bg, img)
 
 
 def tab_icon(size=256):
-    s = size / 256
-    img = Image.new("RGBA", (size, size), (0, 0, 0, 0))
+    k = SS * size / 256
+    img = Image.new("RGBA", (size * SS, size * SS), (0, 0, 0, 0))
     d = ImageDraw.Draw(img)
     white = (255, 255, 255, 255)
-    colw = 62 * s
-    for i, n in enumerate([3, 2, 3]):
-        x0 = 22 * s + i * (colw + 13 * s)
-        d.rectangle([x0, 24 * s, x0 + colw, 38 * s], fill=white)
-        for j in range(n):
-            y0 = 56 * s + j * 62 * s
-            d.rectangle([x0, y0, x0 + colw, y0 + 48 * s], fill=white)
-    return img
+    clear = (0, 0, 0, 0)
+    d.rounded_rectangle([v * k for v in (44, 34, 192, 234)], radius=18 * k, outline=white, width=int(16 * k))
+    for y, end in ((92, 160), (128, 148), (164, 130)):
+        d.rectangle(scaled([(76, y), (end, y + 14)], k), fill=white)
+    # Clip: a gap in the outline, then the clip itself
+    d.rounded_rectangle([v * k for v in (78, 14, 158, 62)], radius=12 * k, fill=clear)
+    d.rounded_rectangle([v * k for v in (88, 20, 148, 56)], radius=10 * k, fill=white)
+    # Pen over the corner, cut free from the board by a transparent edge
+    cone, lead, body, cap = pen_polygons((150, 214), (246, 92), 150, 30)
+    cone2, _, body2, cap2 = pen_polygons((142, 224), (246, 92), 168, 52)
+    for poly in (cone2, body2, cap2):
+        d.polygon(scaled(poly, k), fill=clear)
+    for poly in (cone, body, cap):
+        d.polygon(scaled(poly, k), fill=white)
+    d.polygon(scaled(lead, k), fill=clear)
+    return img.resize((size, size), Image.LANCZOS)
 
 
 def rgb565(c):

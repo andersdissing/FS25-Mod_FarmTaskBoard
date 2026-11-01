@@ -32,7 +32,8 @@ local px, py = UI.px, UI.py
 -- Layout in GUI pixels (1920x1080 reference)
 Frame.TOOLBAR_H = 52
 Frame.FOOTER_H = 40
-Frame.COLUMN_GAP = 20
+Frame.COLUMN_GAP = 28
+Frame.SIDE_MARGIN = 56
 Frame.COLUMN_HEADER_H = 46
 Frame.LIST_PAD = 14
 Frame.CARD_H = 48
@@ -364,7 +365,11 @@ function Frame:getBoardArea()
 end
 
 function Frame:computeLayout(area)
-    local L = { area = area, columns = {} }
+    -- Margin left of the first column and right of the last; toolbar and footer line up with them
+    local margin = px(Frame.SIDE_MARGIN)
+    local full = area
+    area = { x = area.x + margin, y = area.y, w = area.w - 2 * margin, h = area.h }
+    local L = { area = area, full = full, columns = {} }
     local top = area.y + area.h
     L.toolbar = { x = area.x, y = top - py(Frame.TOOLBAR_H), w = area.w, h = py(Frame.TOOLBAR_H) }
     L.footer = { x = area.x, y = area.y, w = area.w, h = py(Frame.FOOTER_H) }
@@ -879,6 +884,9 @@ function Frame:openDialog(task)
         status = task ~= nil and task.status or D.STATUS_NOT_STARTED,
         confirmDelete = false,
     }
+    -- The mouse-up of the click that opened the dialog must not reach the text field: it would
+    -- count as a click outside the field and end typing at once
+    self.swallowMouseUp = true
     local element = self.taskTextInput
     if element ~= nil then
         element:setText(task ~= nil and task.text or "")
@@ -937,7 +945,13 @@ function Frame:onTaskTextEnter()
     end
 end
 
-function Frame:onTaskTextEsc()
+-- The game also calls this when the player clicks outside the field (mouseClickedOutside = true),
+-- e.g. the mouse-up of the double-click that opened the dialog. That only ends typing; only the
+-- Esc key cancels the dialog.
+function Frame:onTaskTextEsc(element, mouseClickedOutside)
+    if mouseClickedOutside == true then
+        return
+    end
     self.escAt = now()
     if self.dialog ~= nil then
         self:closeDialog()
@@ -968,7 +982,7 @@ end
 function Frame:drawDialog(L, board)
     local state = self.state
     local dialog = self.dialog
-    local A = L.area
+    local A = L.full
 
     -- Shade over the board; clicks there do nothing
     UI.rect(A.x, A.y, A.w, A.h, UI.C.modalShade)
@@ -1109,6 +1123,16 @@ function Frame:mouseEvent(posX, posY, isDown, isUp, button, eventUsed)
         return Frame:superClass().mouseEvent(self, posX, posY, isDown, isUp, button, eventUsed)
     end
     local left = button == Input.MOUSE_BUTTON_LEFT
+
+    if self.swallowMouseUp then
+        if isUp then
+            self.swallowMouseUp = false
+            return true
+        end
+        if isDown then
+            self.swallowMouseUp = false
+        end
+    end
 
     -- Dragging: the board takes every mouse event
     local d = self.drag
