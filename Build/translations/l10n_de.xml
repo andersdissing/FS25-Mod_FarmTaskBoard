@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<!-- FS25_FarmTaskBoard: German texts. Same keys in every l10n_*.xml file;
+     %d and %s are filled in by the mod and must stay in the same order. -->
+<l10n>
+    <texts>
+        <text name="ftb_tab_title"         text="Aufgaben"/>
+        <text name="ftb_header"            text="Aufgabentafel"/>
+        <text name="ftb_new"               text="+ Neue Aufgabe"/>
+        <text name="ftb_boardFull"         text="Die Tafel ist voll (höchstens %d Aufgaben). Lösche zuerst eine Aufgabe."/>
+        <text name="ftb_role_manager"      text="Hofverwalter · %s"/>
+        <text name="ftb_role_viewer"       text="Nur ansehen · %s (Mitglied)"/>
+        <text name="ftb_role_spectator"    text="Auf keinem Hof"/>
+        <text name="ftb_status_0"          text="Nicht begonnen"/>
+        <text name="ftb_status_1"          text="Zu erledigen"/>
+        <text name="ftb_status_2"          text="Erledigt"/>
+        <text name="ftb_more"              text="+%d weitere"/>
+        <text name="ftb_edit"              text="Bearbeiten"/>
+        <text name="ftb_key_drag"          text="Ziehen"/>
+        <text name="ftb_hint_drag"         text="Aufgabe verschieben"/>
+        <text name="ftb_key_doubleClick"   text="Doppelklick"/>
+        <text name="ftb_hint_doubleClick"  text="Aufgabe bearbeiten"/>
+        <text name="ftb_hint_readOnly"     text="Nur der Hofverwalter kann Aufgaben erstellen, bearbeiten, verschieben und löschen"/>
+        <text name="ftb_hint_close"        text="Schließen"/>
+        <text name="ftb_synced"            text="Mit allen Spielern synchronisiert"/>
+        <text name="ftb_dialog_new"        text="Neue Aufgabe"/>
+        <text name="ftb_dialog_edit"       text="Aufgabe bearbeiten"/>
+        <text name="ftb_field_number"      text="Nummer"/>
+        <text name="ftb_field_text"        text="Text"/>
+        <text name="ftb_field_status"      text="Status"/>
+        <text name="ftb_number_new"        text="Neu"/>
+        <text name="ftb_delete"            text="Aufgabe löschen"/>
+        <text name="ftb_confirm_delete"    text="Aufgabe #%d „%s“ löschen? Das kann nicht rückgängig gemacht werden."/>
+        <text name="ftb_confirm_yes"       text="Löschen"/>
+        <text name="ftb_cancel"            text="Abbrechen"/>
+        <text name="ftb_save"              text="Speichern"/>
+    </texts>
+</l10n>

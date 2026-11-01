@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<!-- In-game menu page (Esc) > Tasks for FS25_FarmTaskBoard. Uses only base game FS25 GUI profiles.
+     The header (icon and title) is the base game's. The board itself (toolbar, three columns, cards,
+     drag and drop, the create/edit dialog) is drawn by FarmTaskBoardFrame:draw below the header.
+     The only other element is the dialog's text field: a real game text input, so typing, the
+     cursor and IME work like everywhere else in the game. It is hidden until the dialog opens and
+     then placed over the dialog's text box (FarmTaskBoardFrame:placeTextInput). -->
+<GUI name="farmTaskBoard">
+    <GuiElement profile="fs25_menuContainer" name="farmTaskBoard">
+        <GuiElement profile="fs25_menuHeaderPanel" id="headerPanel">
+            <Bitmap profile="fs25_menuHeaderIconBg">
+                <Bitmap profile="fs25_menuHeaderIcon" id="headerIcon"/>
+            </Bitmap>
+            <Text profile="fs25_menuHeaderTitle" id="headerTitle"/>
+        </GuiElement>
+
+        <TextInput profile="fs25_textInput" id="taskTextInput" position="0px 0px" size="460px 42px"
+                   maxCharacters="500" maxInputTextWidth="430px"
+                   onEnterPressed="onTaskTextEnter" onEscPressed="onTaskTextEsc"/>
+    </GuiElement>
+</GUI>

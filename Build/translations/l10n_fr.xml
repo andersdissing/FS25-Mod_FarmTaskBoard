@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<!-- FS25_FarmTaskBoard: French texts. Same keys in every l10n_*.xml file;
+     %d and %s are filled in by the mod and must stay in the same order. -->
+<l10n>
+    <texts>
+        <text name="ftb_tab_title"         text="Tâches"/>
+        <text name="ftb_header"            text="Tableau des tâches"/>
+        <text name="ftb_new"               text="+ Nouvelle tâche"/>
+        <text name="ftb_boardFull"         text="Le tableau est plein (%d tâches au maximum). Supprimez d'abord une tâche."/>
+        <text name="ftb_role_manager"      text="Gestionnaire de ferme · %s"/>
+        <text name="ftb_role_viewer"       text="Lecture seule · %s (membre)"/>
+        <text name="ftb_role_spectator"    text="Dans aucune ferme"/>
+        <text name="ftb_status_0"          text="Pas commencé"/>
+        <text name="ftb_status_1"          text="À faire"/>
+        <text name="ftb_status_2"          text="Terminé"/>
+        <text name="ftb_more"              text="+%d de plus"/>
+        <text name="ftb_edit"              text="Modifier"/>
+        <text name="ftb_key_drag"          text="Glisser"/>
+        <text name="ftb_hint_drag"         text="Déplacer la tâche"/>
+        <text name="ftb_key_doubleClick"   text="Double-clic"/>
+        <text name="ftb_hint_doubleClick"  text="Modifier la tâche"/>
+        <text name="ftb_hint_readOnly"     text="Seul le gestionnaire de la ferme peut créer, modifier, déplacer et supprimer des tâches"/>
+        <text name="ftb_hint_close"        text="Fermer"/>
+        <text name="ftb_synced"            text="Synchronisé avec tous les joueurs"/>
+        <text name="ftb_dialog_new"        text="Nouvelle tâche"/>
+        <text name="ftb_dialog_edit"       text="Modifier la tâche"/>
+        <text name="ftb_field_number"      text="Numéro"/>
+        <text name="ftb_field_text"        text="Texte"/>
+        <text name="ftb_field_status"      text="Statut"/>
+        <text name="ftb_number_new"        text="Nouveau"/>
+        <text name="ftb_delete"            text="Supprimer la tâche"/>
+        <text name="ftb_confirm_delete"    text="Supprimer la tâche n°%d « %s » ? Cette action est irréversible."/>
+        <text name="ftb_confirm_yes"       text="Supprimer"/>
+        <text name="ftb_cancel"            text="Annuler"/>
+        <text name="ftb_save"              text="Enregistrer"/>
+    </texts>
+</l10n>

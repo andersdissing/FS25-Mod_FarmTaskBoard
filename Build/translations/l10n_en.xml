@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<!-- FS25_FarmTaskBoard: English texts. Same keys in every l10n_*.xml file;
+     %d and %s are filled in by the mod and must stay in the same order. -->
+<l10n>
+    <texts>
+        <text name="ftb_tab_title"         text="Tasks"/>
+        <text name="ftb_header"            text="Task board"/>
+        <text name="ftb_new"               text="+ New task"/>
+        <text name="ftb_boardFull"         text="The board is full (at most %d tasks). Delete a task first."/>
+        <text name="ftb_role_manager"      text="Farm manager · %s"/>
+        <text name="ftb_role_viewer"       text="View only · %s (member)"/>
+        <text name="ftb_role_spectator"    text="Not on a farm"/>
+        <text name="ftb_status_0"          text="Not started"/>
+        <text name="ftb_status_1"          text="To do"/>
+        <text name="ftb_status_2"          text="Done"/>
+        <text name="ftb_more"              text="+%d more"/>
+        <text name="ftb_edit"              text="Edit"/>
+        <text name="ftb_key_drag"          text="Drag"/>
+        <text name="ftb_hint_drag"         text="Move task"/>
+        <text name="ftb_key_doubleClick"   text="Double-click"/>
+        <text name="ftb_hint_doubleClick"  text="Edit task"/>
+        <text name="ftb_hint_readOnly"     text="Only the farm manager can create, edit, move and delete tasks"/>
+        <text name="ftb_hint_close"        text="Close"/>
+        <text name="ftb_synced"            text="Synced with all players"/>
+        <text name="ftb_dialog_new"        text="New task"/>
+        <text name="ftb_dialog_edit"       text="Edit task"/>
+        <text name="ftb_field_number"      text="Number"/>
+        <text name="ftb_field_text"        text="Text"/>
+        <text name="ftb_field_status"      text="Status"/>
+        <text name="ftb_number_new"        text="New"/>
+        <text name="ftb_delete"            text="Delete task"/>
+        <text name="ftb_confirm_delete"    text='Delete task #%d "%s"? This cannot be undone.'/>
+        <text name="ftb_confirm_yes"       text="Delete"/>
+        <text name="ftb_cancel"            text="Cancel"/>
+        <text name="ftb_save"              text="Save"/>
+    </texts>
+</l10n>

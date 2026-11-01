@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<modDesc descVersion="115">
+    <author>Anders Dissing</author>
+    <version>1.0.0.0</version>
+    <title>
+        <en>Farm Task Board</en>
+        <de>Hof-Aufgabentafel</de>
+        <fr>Tableau Des Tâches De La Ferme</fr>
+        <da>Opgavetavle Til Farmen</da>
+    </title>
+    <description>
+        <en><![CDATA[A task board for your farm in the menu (Esc) > Tasks.
+
+- Three columns: Not started, To do and Done.
+- The farm manager creates tasks (up to 500 characters), edits them, drags them between and within the columns and deletes them.
+- Everyone else on the farm can see the board but not change it.
+- Tasks are numbered per farm; numbers are never reused.
+- Done tasks stay until they are deleted.
+
+Multiplayer: every farm has its own board. All changes go through the server and are shown to every player on the farm at once. Players who join see the current board.
+The board is saved with the savegame (taskBoard.xml). A new savegame starts with an empty board.]]></en>
+        <de><![CDATA[Eine Aufgabentafel für deinen Hof im Menü (Esc) > Aufgaben.
+
+- Drei Spalten: Nicht begonnen, Zu erledigen und Erledigt.
+- Der Hofverwalter erstellt Aufgaben (bis zu 500 Zeichen), bearbeitet sie, zieht sie zwischen und innerhalb der Spalten und löscht sie.
+- Alle anderen auf dem Hof sehen die Tafel, können sie aber nicht ändern.
+- Aufgaben werden pro Hof nummeriert; Nummern werden nie wiederverwendet.
+- Erledigte Aufgaben bleiben stehen, bis sie gelöscht werden.
+
+Mehrspieler: Jeder Hof hat seine eigene Tafel. Alle Änderungen laufen über den Server und erscheinen sofort bei allen Spielern des Hofes. Wer beitritt, sieht die aktuelle Tafel.
+Die Tafel wird mit dem Spielstand gespeichert (taskBoard.xml). Ein neuer Spielstand beginnt mit einer leeren Tafel.]]></de>
+        <fr><![CDATA[Un tableau des tâches pour votre ferme dans le menu (Échap) > Tâches.
+
+- Trois colonnes : Pas commencé, À faire et Terminé.
+- Le gestionnaire de la ferme crée des tâches (jusqu'à 500 caractères), les modifie, les fait glisser entre et dans les colonnes et les supprime.
+- Les autres membres de la ferme voient le tableau mais ne peuvent pas le modifier.
+- Les tâches sont numérotées par ferme ; un numéro n'est jamais réutilisé.
+- Les tâches terminées restent jusqu'à ce qu'elles soient supprimées.
+
+Multijoueur : chaque ferme a son propre tableau. Toutes les modifications passent par le serveur et s'affichent aussitôt chez tous les joueurs de la ferme. Les joueurs qui rejoignent la partie voient le tableau actuel.
+Le tableau est enregistré avec la sauvegarde (taskBoard.xml). Une nouvelle sauvegarde commence avec un tableau vide.]]></fr>
+        <da><![CDATA[En opgavetavle til din farm i menuen (Esc) > Opgaver.
+
+- Tre kolonner: Ikke startet, Todo og Færdig.
+- Farm manageren opretter opgaver (op til 500 tegn), retter dem, trækker dem mellem og inden for kolonnerne og sletter dem.
+- Alle andre på farmen kan se tavlen, men ikke ændre den.
+- Opgaverne nummereres pr. farm; numre genbruges aldrig.
+- Færdige opgaver bliver stående, indtil de slettes.
+
+Multiplayer: hver farm har sin egen tavle. Alle ændringer går gennem serveren og vises med det samme hos alle spillere på farmen. Spillere, der joiner, ser den aktuelle tavle.
+Tavlen gemmes med savegamet (taskBoard.xml). Et nyt savegame starter med en tom tavle.]]></da>
+    </description>
+    <iconFilename>icon_FarmTaskBoard.dds</iconFilename>
+    <multiplayer supported="true"/>
+
+    <extraSourceFiles>
+        <sourceFile filename="scripts/FarmTaskBoard.lua"/>
+    </extraSourceFiles>
+
+    <!-- Texts: translations/l10n_en.xml, l10n_de.xml, l10n_fr.xml, l10n_da.xml -->
+    <l10n filenamePrefix="translations/l10n"/>
+</modDesc>

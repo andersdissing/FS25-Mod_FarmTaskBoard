@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="da">
+<head>
+<meta charset="utf-8">
+<title>FS25 Opgavetavle - mockup</title>
+<style>
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; width: 1600px; height: 900px; overflow: hidden;
+    font-family: "Segoe UI", Arial, sans-serif; color: #e8e8e8;
+    background: linear-gradient(160deg, #3d4a2a 0%, #262d1c 45%, #14170f 100%);
+  }
+  .backdrop { position: absolute; inset: 0; background: rgba(0,0,0,.45); }
+  .frame {
+    position: absolute; left: 80px; top: 60px; width: 1440px; height: 780px;
+    background: rgba(18,20,16,.94); border: 1px solid #2d3326; border-radius: 4px;
+    box-shadow: 0 10px 40px rgba(0,0,0,.6); display: flex; flex-direction: column;
+  }
+  .tabs { height: 52px; display: flex; align-items: flex-end; gap: 4px; padding: 0 28px; background: rgba(0,0,0,.4); border-bottom: 1px solid #2d3326; }
+  .tab { padding: 10px 18px; font-size: 13px; text-transform: uppercase; letter-spacing: .5px; color: #9a9a9a; border-radius: 3px 3px 0 0; }
+  .tab.on { background: #8dc63f; color: #111; font-weight: 700; }
+  .header {
+    height: 64px; display: flex; align-items: center; padding: 0 28px; gap: 16px;
+    border-bottom: 2px solid #8dc63f; background: rgba(0,0,0,.25);
+  }
+  .header h1 { margin: 0; font-size: 22px; font-weight: 600; letter-spacing: .5px; text-transform: uppercase; }
+  .role { margin-left: auto; font-size: 13px; padding: 5px 10px; border-radius: 3px; background: #2a3a1a; color: #b8e07a; border: 1px solid #4d6b25; }
+  .btn {
+    background: #8dc63f; color: #111; border: none; font-weight: 700; font-size: 14px;
+    padding: 9px 18px; border-radius: 3px; text-transform: uppercase; cursor: pointer;
+  }
+  .btn.ghost { background: transparent; color: #ddd; border: 1px solid #555; }
+  .board { flex: 1; display: flex; gap: 20px; padding: 24px 28px; }
+  .col { flex: 1; background: rgba(255,255,255,.035); border: 1px solid #2c2f28; border-radius: 4px; display: flex; flex-direction: column; }
+  .col h2 {
+    margin: 0; padding: 14px 16px; font-size: 15px; text-transform: uppercase; letter-spacing: 1px;
+    display: flex; justify-content: space-between; border-bottom: 1px solid #2c2f28;
+  }
+  .col h2 .count { color: #888; font-weight: 400; }
+  .col[data-s="0"] h2 { border-top: 3px solid #7a7a7a; }
+  .col[data-s="1"] h2 { border-top: 3px solid #e0b030; }
+  .col[data-s="2"] h2 { border-top: 3px solid #8dc63f; }
+  .col.over { background: rgba(141,198,63,.08); border-color: #8dc63f; }
+  .list { padding: 12px; display: flex; flex-direction: column; gap: 10px; flex: 1; }
+  .card {
+    display: flex; align-items: center; gap: 12px; padding: 12px 14px; min-height: 48px;
+    background: #23271f; border: 1px solid #353b2e; border-left: 4px solid #666; border-radius: 3px;
+    font-size: 15px; cursor: grab; transition: transform .25s ease, opacity .25s ease;
+  }
+  .col[data-s="1"] .card { border-left-color: #e0b030; }
+  .col[data-s="2"] .card { border-left-color: #8dc63f; }
+  .col[data-s="2"] .card .txt { color: #9a9a9a; text-decoration: line-through; }
+  .num { font-weight: 700; color: #8dc63f; min-width: 34px; }
+  .txt { flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .edit { opacity: .55; font-size: 13px; border: 1px solid #555; padding: 3px 8px; border-radius: 3px; }
+  .placeholder { min-height: 48px; border: 2px dashed #8dc63f; border-radius: 3px; background: rgba(141,198,63,.07); }
+  .card.source { opacity: .25; }
+  .drag {
+    position: absolute; width: 410px; pointer-events: none; z-index: 10;
+    opacity: .7; transform: rotate(-2deg) scale(1.03);
+    box-shadow: 0 14px 30px rgba(0,0,0,.6); border-left-color: #e0b030;
+  }
+  .cursor { position: absolute; z-index: 11; width: 22px; height: 22px; }
+  .footer { height: 48px; display: flex; align-items: center; padding: 0 28px; gap: 24px; font-size: 13px; color: #9a9a9a; border-top: 1px solid #2c2f28; }
+  .key { display: inline-block; background: #333; border: 1px solid #555; border-radius: 3px; padding: 1px 7px; margin-right: 6px; color: #ddd; }
+  /* dialog */
+  .modal-bg { position: absolute; inset: 0; background: rgba(0,0,0,.55); display: none; z-index: 20; }
+  .modal {
+    position: absolute; left: 50%; top: 50%; transform: translate(-50%,-50%); width: 620px;
+    background: #181b15; border: 1px solid #3a4130; border-top: 3px solid #8dc63f; border-radius: 4px; padding: 26px 30px;
+  }
+  .modal h3 { margin: 0 0 20px; font-size: 19px; text-transform: uppercase; letter-spacing: .5px; }
+  .field { margin-bottom: 18px; }
+  .field label { display: block; font-size: 12px; text-transform: uppercase; color: #9a9a9a; margin-bottom: 6px; letter-spacing: .5px; }
+  .input { background: #0f110d; border: 1px solid #8dc63f; padding: 11px 12px; font-size: 15px; border-radius: 3px; }
+  .ro { background: #0f110d; border: 1px solid #333; padding: 11px 12px; font-size: 15px; color: #8dc63f; font-weight: 700; border-radius: 3px; width: 110px; }
+  .seg { display: flex; gap: 8px; }
+  .seg div { flex: 1; text-align: center; padding: 10px; border: 1px solid #444; border-radius: 3px; font-size: 14px; }
+  .seg .on { background: #e0b030; color: #111; border-color: #e0b030; font-weight: 700; }
+  .actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 26px; }
+  body.dialog .modal-bg { display: block; }
+  .btn.danger { background: transparent; color: #e06050; border: 1px solid #a04030; margin-right: auto; }
+  .delbox { display: none; margin-top: 18px; padding: 12px 14px; border: 1px solid #a04030; background: rgba(160,64,48,.12); border-radius: 3px; font-size: 14px; }
+  body.delconfirm .delbox { display: block; }
+  body.delconfirm .actions { display: none; }
+  .delbox .row { display: flex; justify-content: flex-end; gap: 10px; margin-top: 12px; }
+  .btn.red { background: #c04a38; color: #fff; }
+  body.readonly .drag, body.readonly .cursor, body.readonly .placeholder, body.readonly .edit, body.readonly #newbtn { display: none; }
+  body.readonly .card.source { opacity: 1; }
+  body.readonly .col.over { background: rgba(255,255,255,.035); border-color: #2c2f28; }
+  body.readonly .card { cursor: default; }
+  .role.ro-role { display: none; background: #2a2a2a; color: #bbb; border-color: #555; }
+  body.readonly .role.mgr { display: none; } body.readonly .role.ro-role { display: block; }
+  .hint-ro { display: none; } body.readonly .hint-ro { display: inline; } body.readonly .hint-mgr { display: none; }
+</style>
+</head>
+<body>
+<div class="backdrop"></div>
+<div class="frame">
+  <div class="tabs"><div class="tab">Kort</div><div class="tab">Kalender</div><div class="tab">Priser</div><div class="tab">Dyr</div><div class="tab">Sædskifte</div><div class="tab on">Opgaver</div><div class="tab">Indstillinger</div></div>
+  <div class="header">
+    <h1>Opgavetavle</h1>
+    <button class="btn" id="newbtn">+ Ny opgave</button>
+    <div class="role mgr">Farm manager · Anders</div>
+    <div class="role ro-role">Kun visning · Mikkel (deltager)</div>
+  </div>
+  <div class="board">
+    <div class="col" data-s="0">
+      <h2>Ikke startet <span class="count">3</span></h2>
+      <div class="list">
+        <div class="card"><span class="num">#7</span><span class="txt">Kalk mark 23+25 før vintersæd</span><span class="edit">Ret</span></div>
+        <div class="card"><span class="num">#8</span><span class="txt">Køb 4.000 l frø til canola, mark 76/77</span><span class="edit">Ret</span></div>
+        <div class="card source"><span class="num">#9</span><span class="txt">Lever byg til Grain Mill</span><span class="edit">Ret</span></div>
+      </div>
+    </div>
+    <div class="col over" data-s="1">
+      <h2>Todo <span class="count">3</span></h2>
+      <div class="list">
+        <div class="card"><span class="num">#4</span><span class="txt">Pløj mark 6+7</span><span class="edit">Ret</span></div>
+        <div class="placeholder"></div>
+        <div class="card"><span class="num">#5</span><span class="txt">Høst havre mark 8</span><span class="edit">Ret</span></div>
+        <div class="card"><span class="num">#6</span><span class="txt">Slå græs mark 3,4,5</span><span class="edit">Ret</span></div>
+      </div>
+    </div>
+    <div class="col" data-s="2">
+      <h2>Færdig <span class="count">3</span></h2>
+      <div class="list">
+        <div class="card"><span class="num">#1</span><span class="txt">Så hvede mark 3,4,5</span><span class="edit">Ret</span></div>
+        <div class="card"><span class="num">#2</span><span class="txt">Lever canola til Oil Mill</span><span class="edit">Ret</span></div>
+        <div class="card"><span class="num">#3</span><span class="txt">Gød mark 23+25</span><span class="edit">Ret</span></div>
+      </div>
+    </div>
+  </div>
+  <div class="footer">
+    <span class="hint-mgr"><span class="key">Træk</span>Flyt opgave</span>
+    <span class="hint-mgr"><span class="key">Dobbeltklik</span>Ret opgave</span>
+    <span class="hint-ro">Kun farm manager kan oprette, rette, flytte og slette opgaver</span>
+    <span><span class="key">Esc</span>Luk</span>
+    <span style="margin-left:auto">Synkroniseret med alle spillere</span>
+  </div>
+</div>
+
+<div class="card drag" style="left:615px; top:314px"><span class="num">#9</span><span class="txt">Lever byg til Grain Mill</span><span class="edit">Ret</span></div>
+<svg class="cursor" style="left:820px; top:340px" viewBox="0 0 24 24"><path d="M3 2l7 19 2.5-7.5L20 11z" fill="#fff" stroke="#000" stroke-width="1.2"/></svg>
+
+<div class="modal-bg">
+  <div class="modal">
+    <h3>Ret opgave</h3>
+    <div class="field"><label>Nummer</label><div class="ro">#5</div></div>
+    <div class="field"><label>Tekst</label><div class="input">Høst havre mark 8|</div></div>
+    <div class="field"><label>Status</label>
+      <div class="seg"><div>Ikke startet</div><div class="on">Todo</div><div>Færdig</div></div>
+    </div>
+    <div class="actions"><button class="btn danger">Slet opgave</button><button class="btn ghost">Annuller</button><button class="btn">Gem</button></div>
+    <div class="delbox">Slet opgave #5 "Høst havre mark 8"? Det kan ikke fortrydes.
+      <div class="row"><button class="btn ghost">Annuller</button><button class="btn red">Slet</button></div></div>
+  </div>
+</div>
+<script>var h=location.hash.slice(1).split(',');h.forEach(function(c){if(c)document.body.classList.add(c)});</script>
+</body>
+</html>
