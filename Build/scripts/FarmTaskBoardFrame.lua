@@ -34,6 +34,9 @@ Frame.TOOLBAR_H = 52
 Frame.FOOTER_H = 40
 Frame.COLUMN_GAP = 28
 Frame.SIDE_MARGIN = 56
+-- Room kept free at the right screen edge and for the menu's button bar at the bottom
+Frame.SCREEN_MARGIN_RIGHT = 24
+Frame.BUTTON_BAR_H = 64
 Frame.COLUMN_HEADER_H = 46
 Frame.LIST_PAD = 14
 Frame.CARD_H = 48
@@ -357,11 +360,14 @@ function Frame:getBoardArea()
     if header ~= nil and header.absPosition ~= nil and header.absPosition[2] > y and header.absPosition[2] < top then
         top = header.absPosition[2] - py(12)
     end
-    local bottom = y + py(8)
-    if top - bottom <= py(200) then
+    -- The menu container reaches past the right screen edge and under the menu's button bar
+    -- (E / Q / Esc) at the bottom (seen in the game at 16:9): keep the board on screen and above it
+    local right = math.min(x + w, 1 - px(Frame.SCREEN_MARGIN_RIGHT))
+    local bottom = math.max(y + py(8), py(Frame.BUTTON_BAR_H))
+    if top - bottom <= py(200) or right - x <= px(400) then
         return nil
     end
-    return { x = x, y = bottom, w = w, h = top - bottom }
+    return { x = x, y = bottom, w = right - x, h = top - bottom }
 end
 
 function Frame:computeLayout(area)

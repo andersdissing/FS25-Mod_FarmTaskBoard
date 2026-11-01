@@ -55,10 +55,13 @@ g_pixelSizeScaledY = 1 / 1080
 RenderText = { ALIGN_LEFT = 0, ALIGN_CENTER = 1, ALIGN_RIGHT = 2 }
 Input = { MOUSE_BUTTON_LEFT = 1, MOUSE_BUTTON_WHEEL_UP = 4, MOUSE_BUTTON_WHEEL_DOWN = 5 }
 InputAction = { MENU_BACK = 1, MENU_PAGE_PREV = 2, MENU_PAGE_NEXT = 3 }
+RECT_EXTENT = { maxX = 0, minY = 1 }
 function drawFilledRect(x, y, w, h, r, g, b, a)
   for _, v in ipairs({ x, y, w, h, r, g, b, a }) do
     if type(v) ~= "number" or v ~= v then error("drawFilledRect with bad value") end
   end
+  RECT_EXTENT.maxX = math.max(RECT_EXTENT.maxX, x + w)
+  RECT_EXTENT.minY = math.min(RECT_EXTENT.minY, y)
 end
 function renderText(x, y, size, text)
   if type(text) ~= "string" then error("renderText with " .. type(text)) end
@@ -212,8 +215,10 @@ g_gui = { frames = {} }
 function g_gui:loadGui(file, name, frame)
   for _, id in ipairs(FRAME_IDS) do frame[id] = GuiElement.stub(id) end
   local root = GuiElement.stub("root")
-  root.absPosition, root.absSize = { 0.05, 0.08 }, { 0.9, 0.82 }
-  frame.headerPanel.absPosition = { 0.05, 0.84 }
+  -- As in the game at 16:9: the menu container starts right of the tab bar, is wider than what
+  -- is left of the screen and reaches down under the menu's button bar
+  root.absPosition, root.absSize = { 0.095, 0.0 }, { 0.95, 0.9 }
+  frame.headerPanel.absPosition = { 0.095, 0.84 }
   frame.elements[1] = root
   self.frames[name] = frame
 end
@@ -360,6 +365,9 @@ def single_player():
     check(ev("#board().tasks") == 0, "new savegame starts empty")
     check(ev("findHit('new') ~= nil"), "+ Ny opgave shown to the farm manager")
     check(ev("rendered('Farm manager · Spiller 1')"), "role badge")
+    run("RECT_EXTENT = { maxX = 0, minY = 1 } frameStep()")
+    check(ev("RECT_EXTENT.maxX") <= 1 - 20 / 1920, "board ends left of the right screen edge: %s" % ev("RECT_EXTENT.maxX"))
+    check(ev("RECT_EXTENT.minY") >= 60 / 1080, "board stays above the menu's button bar: %s" % ev("RECT_EXTENT.minY"))
 
     # Create: numbers 1, 2, 3, 4
     run("newTask('Pløj mark 6+7')")
