@@ -242,9 +242,41 @@ function UI.upper(text)
     end))
 end
 
+-- renderText is drawn after every drawFilledRect of the frame, so a box can never cover text.
+-- While a text mask is set, text that touches the mask box is left out and all other text gets
+-- its alpha multiplied by dim (the board behind the dialog).
+UI.textMask = nil
+function UI.setTextMask(x, y, w, h, dim)
+    UI.textMask = { x = x, y = y, w = w, h = h, dim = dim }
+end
+
+function UI.clearTextMask()
+    UI.textMask = nil
+end
+
+local function isMasked(x, y, size, text, align, bold)
+    local m = UI.textMask
+    local w = textWidth(size, text, bold)
+    local left = x
+    if align == "center" then
+        left = x - w * 0.5
+    elseif align == "right" then
+        left = x - w
+    end
+    -- y is the baseline; descenders go a little below it
+    local bottom, top = y - size * 0.3, y + size
+    return left < m.x + m.w and left + w > m.x and bottom < m.y + m.h and top > m.y
+end
+
 -- align: "left" (default), "center", "right"; x is the left edge, centre or right edge
 function UI.text(x, y, size, text, c, align, bold)
     c = c or UI.C.text
+    if UI.textMask ~= nil then
+        if isMasked(x, y, size, text, align, bold) then
+            return
+        end
+        c = UI.alpha(c, UI.textMask.dim)
+    end
     setTextColor(c[1], c[2], c[3], c[4] or 1)
     setTextBold(bold == true)
     if align == "center" then

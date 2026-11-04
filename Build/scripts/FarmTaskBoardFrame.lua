@@ -529,10 +529,17 @@ function Frame:draw(...)
     if self.dialog ~= nil or self.drag ~= nil then
         state.mouseX, state.mouseY = nil, nil
     end
+    -- The engine draws all text after all rectangles, so the board's text would show through
+    -- the dialog. Under the dialog it is left out; elsewhere it is dimmed like the shade.
+    if self.dialog ~= nil then
+        local dx, dy, dw, dh = self:getDialogRect(L, board)
+        UI.setTextMask(dx, dy, dw, dh, 1 - UI.C.modalShade[4])
+    end
     self.cards = {}
     self:drawColumns(L, lists, board, dt)
     self:drawToolbar(L, board)
     self:drawFooter(L)
+    UI.clearTextMask()
     state.mouseX, state.mouseY = mouseX, mouseY
 
     self:drawGhost(board, dt)
@@ -985,20 +992,12 @@ function Frame:placeTextInput(x, y, w, h)
     end
 end
 
-function Frame:drawDialog(L, board)
-    local state = self.state
+-- Size and place of the dialog, and the lines of the delete question (nil when not asked)
+function Frame:getDialogRect(L, board)
     local dialog = self.dialog
     local A = L.full
-
-    -- Shade over the board; clicks there do nothing
-    UI.rect(A.x, A.y, A.w, A.h, UI.C.modalShade)
-    UI.hit(state, A.x, A.y, A.w, A.h, function() end, nil, "shade")
-
     local w = px(Frame.DIALOG_W)
-    local pad = px(30)
-    local innerW = w - 2 * pad
-    local labelSize = py(12)
-    local size = py(15)
+    local innerW = w - 2 * px(30)
 
     local confirmLines = nil
     local hpx = 26 + 22 + 22 + 62 + 18 + 62 + 18 + 60 + 26 + 40 + 26
@@ -1012,8 +1011,23 @@ function Frame:drawDialog(L, board)
         hpx = hpx - 40 + (#confirmLines * 20 + 14 + 12 + 34 + 14)
     end
     local h = py(hpx)
-    local x = A.x + (A.w - w) * 0.5
-    local y = A.y + (A.h - h) * 0.5
+    return A.x + (A.w - w) * 0.5, A.y + (A.h - h) * 0.5, w, h, confirmLines
+end
+
+function Frame:drawDialog(L, board)
+    local state = self.state
+    local dialog = self.dialog
+    local A = L.full
+
+    -- Shade over the board; clicks there do nothing
+    UI.rect(A.x, A.y, A.w, A.h, UI.C.modalShade)
+    UI.hit(state, A.x, A.y, A.w, A.h, function() end, nil, "shade")
+
+    local pad = px(30)
+    local labelSize = py(12)
+    local size = py(15)
+    local x, y, w, h, confirmLines = self:getDialogRect(L, board)
+    local innerW = w - 2 * pad
     local top = y + h
 
     UI.box(x, y, w, h, UI.C.dialog, UI.C.dialogLine)
